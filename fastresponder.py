@@ -1,6 +1,8 @@
 from google.appengine.ext import ndb
+from google.appengine.ext import db
+from geo.geomodel import GeoModel
 
-class FastResponder(ndb.Model):
+class FastResponder(GeoModel):
     coverage = ndb.IntegerProperty()
     email = ndb.StringProperty()
     location = ndb.GeoPtProperty()
@@ -26,3 +28,23 @@ def get_entity(fast_responder_instance_key):
 
 def delete_entity(fast_responder_instance):
     fast_responder_instance.key.delete()
+
+def _get_latitude(self):
+    return self.location.lat if self.location else None
+
+def _set_latitude(self, lat):
+    if not self.location:
+      self.location = db.GeoPt()
+    self.location.lat = lat
+  latitude = property(_get_latitude, _set_latitude)
+
+def _get_longitude(self):
+    return self.location.lon if self.location else None
+
+def _set_longitude(self, lon):
+    if not self.location:
+        self.location = db.GeoPt()
+
+    self.location.lon = lon
+
+longitude = property(_get_longitude, _set_longitude)
