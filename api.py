@@ -34,7 +34,29 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
 
+class JsonResponse(webapp2.Response):
+    def __init__(self, body, status=200):
+        super(webapp2.Response, self).__init__()
+        self.status = status
+        self.headers['Content-Type'] = 'application/json; charset=utf-8'
+        self.body = json.dumps(body) + '\n'
+
+class JsonApi(webapp2.RequestHandler):
+    def handle_exception(self, exception, debug_mode):
+        status = 500
+        body = {'message': 'Internal Server Error'}
+
+        if (isinstance(exception, webapp2.HTTPException)):
+            status = exception.code
+            body['message'] = exception.title
+
+        return JsonResponse(body, status)
+
+class UserApi(JsonApi):
+    def post(self):
+        self.abort(501)
 
 app = webapp2.WSGIApplication([
     ('/api/', MainPage),
+    ('/api/v0/user', UserApi),
 ], debug=True)
