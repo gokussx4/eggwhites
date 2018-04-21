@@ -14,8 +14,9 @@ class ZipProperty(ndb.StringProperty):
     def _validate(self, value):
         if (not isinstance(value, basestring)):
             raise datastore_errors.BadValueError('Invalid zip')
-        if (not re.match(r'^\d{5}(?:[-\s]\d{4})?$', value)):
+        if (not re.match(r'^\s*\d{5}(?:[-\s]\d{4})?\s*$', value)):
             raise datastore_errors.BadValueError('Invalid zip')
+        return value.strip()
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
