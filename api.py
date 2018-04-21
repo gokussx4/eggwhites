@@ -1,8 +1,20 @@
 import json
+import logging
 import urllib
 import webapp2
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
+
+class ModelJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if (isinstance(obj, ndb.Model)):
+            mobj = obj.to_dict()
+            mobj['id'] = '{0:x}'.format(obj.key.id())
+            return mobj
+        return json.JSONEncoder.default(self, obj)
+
+class User(ndb.Model):
+    name = ndb.StringProperty()
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
@@ -39,9 +51,16 @@ class JsonResponse(webapp2.Response):
         super(webapp2.Response, self).__init__()
         self.status = status
         self.headers['Content-Type'] = 'application/json; charset=utf-8'
-        self.body = json.dumps(body) + '\n'
+        self.body = json.dumps(body, cls=ModelJSONEncoder) + '\n'
 
 class JsonApi(webapp2.RequestHandler):
+    def get_body(self):
+        if (self.request.headers['Content-Type'] != 'application/json'):
+            self.abort(400)
+        try:
+            return json.loads(self.request.body)
+        except:
+            self.abort(400)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
@@ -49,14 +68,27 @@ class JsonApi(webapp2.RequestHandler):
         if (isinstance(exception, webapp2.HTTPException)):
             status = exception.code
             body['message'] = exception.title
+        else:
+            logging.exception(exception)
 
         return JsonResponse(body, status)
 
-class UserApi(JsonApi):
+class UserBaseApiHandler(JsonApi):
     def post(self):
-        self.abort(501)
+        data = self.get_body()
+        user = User(**data)
+        user.put()
+        return JsonResponse(user)
+
+class UserApiHandler(JsonApi):
+    def get(self, user_id):
+        user = User.get_by_id(long(user_id, base=16))
+        if (user is None):
+            self.abort(404)
+        return JsonResponse(user)
 
 app = webapp2.WSGIApplication([
-    ('/api/', MainPage),
-    ('/api/v0/user', UserApi),
+    (r'/api/', MainPage),
+    (r'/api/v0/user', UserBaseApiHandler),
+    (r'/api/v0/user/(.+)', UserApiHandler),
 ], debug=True)
