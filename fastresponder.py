@@ -7,6 +7,12 @@ class FastResponder(GeoModel):
     email = ndb.StringProperty()
     location = ndb.GeoPtProperty()
     name = ndb.StringProperty()
+    name = ndb.StringProperty()
+    address = ndb.StringProperty()
+    address2 = ndb.StringProperty()
+    city = ndb.StringProperty()
+    state = ndb.StringProperty()
+    zip = ndb.StringProperty()
     phone = ndb.StringProperty()
 
 def create_entity_using_attributes(coverage, email, location, name, phone):
@@ -15,6 +21,11 @@ def create_entity_using_attributes(coverage, email, location, name, phone):
     fast_responder_instance.email = email
     fast_responder_instance.location = location
     fast_responder_instance.name = name
+    fast_responder_instance.address = address
+    fast_responder_instance.address2 = address2
+    fast_responder_instance.city = city
+    fast_responder_instance.state = state
+    fast_responder_instance.zip = zip
     fast_responder_instance.phone = phone
     return fast_responder_instance
 
