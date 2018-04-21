@@ -16,22 +16,18 @@ def get_sorted_dist(distances):
     sortedDistanceMap = sorted(distanceAsMap.items(), key=operator.itemgetter(1))
     return sortedDistanceMap
 
-def main():
+def get_distance_sorted_responders(pos1, pos2Dictionary):
     #initialize data
-    pos1=np.array([0, 0])
-    pos2Dictionary = collections.OrderedDict()
-    pos2Dictionary.update({'user1': [4, 4]})
-    pos2Dictionary.update({'user2': [3, 3]})
-    pos2Dictionary.update({'user3': [2, 2]})
-    pos2Dictionary.update({'user4': [0, 0]})
-    pos2Dictionary.update({'user5': [1, 1]})
-
+    #pos1=np.array([0, 0])
+    #pos2Dictionary = collections.OrderedDict()
+    #pos2Dictionary.update({'user1': [4, 4]})
+    #pos2Dictionary.update({'user2': [3, 3]})
+    #pos2Dictionary.update({'user3': [2, 2]})
+    #pos2Dictionary.update({'user4': [0, 0]})
+    #pos2Dictionary.update({'user5': [1, 1]})
     pos2 = np.array(pos2Dictionary.values())
     result = collections.OrderedDict()
     sorted = get_sorted_dist(spherical_dist(pos1, pos2))
     for k,v in sorted:
         result[pos2Dictionary.keys()[k-1]] = pos2Dictionary.values()[k-1]
-    print(result)
-
-if __name__== "__main__":
-    main()
+    return result
