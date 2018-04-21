@@ -2,7 +2,14 @@ runtime: python27
 api_version: 1
 threadsafe: true
 
+libraries:
+- name: webapp2
+  version: latest
+
 handlers:
+- url: /api/.*
+  script: api.app
+
 - url: /(.+)
   static_files: fastresponse-ui/dist/\1
   upload: fastresponse-ui/dist/.*
