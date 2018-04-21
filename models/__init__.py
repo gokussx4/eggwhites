@@ -1,4 +1,5 @@
-import json
+import json, re
+from google.appengine.api import datastore_errors
 from google.appengine.ext import ndb
 
 class ModelJSONEncoder(json.JSONEncoder):
@@ -8,6 +9,38 @@ class ModelJSONEncoder(json.JSONEncoder):
             mobj['id'] = '{0:x}'.format(obj.key.id())
             return mobj
         return json.JSONEncoder.default(self, obj)
+
+class PhoneProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid phone')
+        if (not re.match(r'^\s*(?:\([0-9]{3}\) *|[0-9]{3}-?)[0-9]{3}-?[0-9]{4}\s*$', value)):
+            raise datastore_errors.BadValueError('Invalid phone')
+        return value.strip()
+
+class StateProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid state')
+        if (not re.match(r'^\s*[A-Za-z]{2}\s*$', value)):
+            raise datastore_errors.BadValueError('Invalid state')
+        return value.strip().upper()
+
+class ZipProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid zip')
+        if (not re.match(r'^\s*\d{5}(?:[-\s]\d{4})?\s*$', value)):
+            raise datastore_errors.BadValueError('Invalid zip')
+        return value.strip()
+
+class GeoCache(ndb.Model):
+    address = ndb.StringProperty(required=True)
+    geo = ndb.GeoPtProperty(required=True, indexed=False)
+
+    @classmethod
+    def get_by_address(cls, address):
+        return cls.query(cls.address == address).get()
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
@@ -28,7 +61,8 @@ class Settings(ndb.Model):
 
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
+    phone = PhoneProperty(required=True)
     address = ndb.StringProperty(required=True)
     city = ndb.StringProperty(required=True)
-    state = ndb.StringProperty(required=True)
-    zip = ndb.StringProperty(required=True)
+    state = StateProperty(required=True)
+    zip = ZipProperty(required=True)

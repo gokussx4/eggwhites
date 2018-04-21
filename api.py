@@ -1,22 +1,11 @@
 import json
 import logging
-from models import ModelJSONEncoder, Settings, User
+from gmaps import geocode
+from models import ModelJSONEncoder, User
 import urllib
 import webapp2
 from google.appengine.api import datastore_errors, urlfetch
 
-
-class MainPage(webapp2.RequestHandler):
-    def get(self):
-        self.response.headers['Content-Type'] = 'text/html'
-        self.response.write('<form method=post><textarea name=address></textarea><br><button type=submit>Search</button></form>')
-    def post(self):
-        address = self.request.POST['address']
-        key = Settings.get('GOOGLE_MAPS_API_KEY')
-        url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + urllib.quote(address) + '&key=' + key
-        obj = json.loads(urlfetch.fetch(url).content)
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
 
 class JsonResponse(webapp2.Response):
     def __init__(self, body, status=200):
@@ -40,8 +29,8 @@ class JsonApi(webapp2.RequestHandler):
             return obj
         except AttributeError:
             self.abort(400)
-        except datastore_errors.BadValueError:
-            self.abort(400)
+        except datastore_errors.BadValueError as ex:
+            self.abort(400, title=ex.message)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
@@ -70,10 +59,13 @@ class UserApiHandler(JsonApi):
 def handle_404(request, response, exception):
     return JsonResponse({'message': 'Not Found'}, 404)
 
+def handle_405(request, response, exception):
+    return JsonResponse({'message': 'Method Not Allowed'}, 405)
+
 app = webapp2.WSGIApplication([
-    (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
     (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
 
 app.error_handlers[404] = handle_404
+app.error_handlers[405] = handle_405
