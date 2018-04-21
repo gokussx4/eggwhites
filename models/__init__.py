@@ -1,4 +1,5 @@
-import json
+import json, re
+from google.appengine.api import datastore_errors
 from google.appengine.ext import ndb
 
 class ModelJSONEncoder(json.JSONEncoder):
@@ -8,6 +9,13 @@ class ModelJSONEncoder(json.JSONEncoder):
             mobj['id'] = '{0:x}'.format(obj.key.id())
             return mobj
         return json.JSONEncoder.default(self, obj)
+
+class ZipProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid zip')
+        if (not re.match(r'^\d{5}(?:[-\s]\d{4})?$', value)):
+            raise datastore_errors.BadValueError('Invalid zip')
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
@@ -31,4 +39,4 @@ class User(ndb.Model):
     address = ndb.StringProperty(required=True)
     city = ndb.StringProperty(required=True)
     state = ndb.StringProperty(required=True)
-    zip = ndb.StringProperty(required=True)
+    zip = ZipProperty(required=True)

@@ -40,8 +40,8 @@ class JsonApi(webapp2.RequestHandler):
             return obj
         except AttributeError:
             self.abort(400)
-        except datastore_errors.BadValueError:
-            self.abort(400)
+        except datastore_errors.BadValueError as ex:
+            self.abort(400, title=ex.message)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
