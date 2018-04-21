@@ -3,5 +3,11 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /.*
-  static_files: fastresponse-ui/index.html
+- url: /(.+)
+  static_files: fastresponse-ui/dist/\1
+  upload: fastresponse-ui/dist/.*
+
+- url: /
+  static_files: fastresponse-ui/dist/index.html
+  upload: app/index.html
+
