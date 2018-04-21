@@ -272,7 +272,7 @@ module.exports = ".register-form {\n    min-width: 150px;\n    max-width: 500px;
 /***/ "./src/app/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<form class=\"register-form\">\n  <table class=\"register-full-width\" cellspacing=\"0\">\n    <tr>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"Name\" [(ngModel)]=\"user.name\" name=\"name\">\n        </mat-form-field>\n      </td>\n    </tr>\n  </table>\n\n  <p>\n    <mat-form-field class=\"register-full-width\">\n      <input matInput placeholder=\"Address\" [(ngModel)]=\"user.address\" name=\"address\">\n    </mat-form-field>\n  </p>\n\n  <table class=\"register-full-width\" cellspacing=\"0\">\n    <tr>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"City\" [(ngModel)]=\"user.city\" name=\"city\">\n        </mat-form-field>\n      </td>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"State\" [(ngModel)]=\"user.state\" name=\"state\">\n        </mat-form-field>\n      </td>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput #postalCode maxlength=\"5\" placeholder=\"Postal Code\" [(ngModel)]=\"user.zip\" name=\"zip\">\n          <mat-hint align=\"end\">{{postalCode.value.length}} / 5</mat-hint>\n        </mat-form-field>\n      </td>\n    </tr>\n\n    <p>\n        <mat-form-field class=\"register-full-width\">\n            <input matInput placeholder=\"Phone\" [(ngModel)]=\"user.phone\" name=\"phone\">\n        </mat-form-field>\n    </p>\n  </table>\n  <button mat-raised-button (click)=\"onSubmit()\">Submit</button>\n</form>"
+module.exports = "<form class=\"register-form\">\n  <table class=\"register-full-width\" cellspacing=\"0\">\n    <tr>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"Name\" [(ngModel)]=\"user.name\" name=\"name\">\n        </mat-form-field>\n      </td>\n    </tr>\n  </table>\n\n  <p>\n    <mat-form-field class=\"register-full-width\">\n      <input matInput placeholder=\"Address\" [(ngModel)]=\"user.address\" name=\"address\">\n    </mat-form-field>\n  </p>\n\n  <table class=\"register-full-width\" cellspacing=\"0\">\n    <tr>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"City\" [(ngModel)]=\"user.city\" name=\"city\">\n        </mat-form-field>\n      </td>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput placeholder=\"State\" [(ngModel)]=\"user.state\" name=\"state\">\n        </mat-form-field>\n      </td>\n      <td>\n        <mat-form-field class=\"register-full-width\">\n          <input matInput #postalCode maxlength=\"5\" placeholder=\"Postal Code\" [(ngModel)]=\"user.zip\" name=\"zip\">\n          <mat-hint align=\"end\">{{postalCode.value.length}} / 5</mat-hint>\n        </mat-form-field>\n      </td>\n    </tr>\n\n    <p>\n        <mat-form-field class=\"register-full-width\">\n            <input matInput placeholder=\"Phone\" [(ngModel)]=\"user.phone\" name=\"phone\">\n        </mat-form-field>\n    </p>\n  </table>\n  <button mat-raised-button (click)=\"onSubmit()\">Submit</button>\n</form>\n\n<p *ngIf=userid>{{userid}} created</p>"
 
 /***/ }),
 
@@ -306,8 +306,9 @@ var RegisterComponent = /** @class */ (function () {
     RegisterComponent.prototype.onSubmit = function () {
         var _this = this;
         this.regService.add(this.user).subscribe(function (user) {
-            _this.user = user;
+            _this.user = new __WEBPACK_IMPORTED_MODULE_1__userInput__["a" /* UserInput */]();
             console.log(user.id + 'was found');
+            _this.userId = user.id;
         });
         console.log(this.user.name, this.user.address);
     };

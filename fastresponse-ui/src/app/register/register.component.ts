@@ -11,7 +11,8 @@ import { Observable } from 'rxjs/Observable';
 export class RegisterComponent implements OnInit {
   
   user: UserInput = new UserInput();
-
+  userId: string;
+  
   constructor(private regService: RegisterService) { }
 
   ngOnInit() {
@@ -19,8 +20,10 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(){
     this.regService.add(this.user).subscribe(user => {
-      this.user = user;
+      this.user = new UserInput();
       console.log(user.id + 'was found');
+      this.userId = user.id;
+      
     });
     console.log(this.user.name, this.user.address);
   }
