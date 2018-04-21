@@ -15,6 +15,10 @@ class ModelJSONEncoder(json.JSONEncoder):
 
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
+    address = ndb.StringProperty(required=True)
+    city = ndb.StringProperty(required=True)
+    state = ndb.StringProperty(required=True)
+    zip = ndb.StringProperty(required=True)
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
