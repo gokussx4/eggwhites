@@ -4,6 +4,17 @@ import webapp2
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
+class ModelJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if (isinstance(obj, ndb.Model)):
+            mobj = obj.to_dict()
+            mobj['id'] = '{0:x}'.format(obj.key.id())
+            return mobj
+        return json.JSONEncoder.default(self, obj)
+
+class User(ndb.Model):
+    name = ndb.StringProperty()
+
 class Settings(ndb.Model):
   name = ndb.StringProperty()
   value = ndb.StringProperty()
@@ -39,7 +50,7 @@ class JsonResponse(webapp2.Response):
         super(webapp2.Response, self).__init__()
         self.status = status
         self.headers['Content-Type'] = 'application/json; charset=utf-8'
-        self.body = json.dumps(body) + '\n'
+        self.body = json.dumps(body, cls=ModelJSONEncoder) + '\n'
 
 class JsonApi(webapp2.RequestHandler):
     def handle_exception(self, exception, debug_mode):
@@ -52,11 +63,21 @@ class JsonApi(webapp2.RequestHandler):
 
         return JsonResponse(body, status)
 
-class UserApi(JsonApi):
+class UserBaseApiHandler(webapp2.RequestHandler):
     def post(self):
-        self.abort(501)
+        user = User(**self.request.POST)
+        user.put()
+        return JsonResponse(user)
+
+class UserApiHandler(webapp2.RequestHandler):
+    def get(self, user_id):
+        user = User.get_by_id(long(user_id, base=16))
+        if (user is None):
+            self.abort(404)
+        return JsonResponse(user)
 
 app = webapp2.WSGIApplication([
-    ('/api/', MainPage),
-    ('/api/v0/user', UserApi),
+    (r'/api/', MainPage),
+    (r'/api/v0/user', UserBaseApiHandler),
+    (r'/api/v0/user/(.+)', UserApiHandler),
 ], debug=True)
