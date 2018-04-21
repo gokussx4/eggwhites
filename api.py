@@ -1,41 +1,9 @@
 import json
 import logging
+from models import ModelJSONEncoder, Settings, User
 import urllib
 import webapp2
 from google.appengine.api import datastore_errors, urlfetch
-from google.appengine.ext import ndb
-
-class ModelJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if (isinstance(obj, ndb.Model)):
-            mobj = obj.to_dict()
-            mobj['id'] = '{0:x}'.format(obj.key.id())
-            return mobj
-        return json.JSONEncoder.default(self, obj)
-
-class User(ndb.Model):
-    name = ndb.StringProperty(required=True)
-    address = ndb.StringProperty(required=True)
-    city = ndb.StringProperty(required=True)
-    state = ndb.StringProperty(required=True)
-    zip = ndb.StringProperty(required=True)
-
-class Settings(ndb.Model):
-  name = ndb.StringProperty()
-  value = ndb.StringProperty()
-
-  @staticmethod
-  def get(name):
-    NOT_SET_VALUE = "NOT SET"
-    retval = Settings.query(Settings.name == name).get()
-    if not retval:
-      retval = Settings()
-      retval.name = name
-      retval.value = NOT_SET_VALUE
-      retval.put()
-    if retval.value == NOT_SET_VALUE:
-      raise Exception(('Setting %s not found in the database.') % (name))
-    return retval.value
 
 
 class MainPage(webapp2.RequestHandler):
@@ -99,8 +67,13 @@ class UserApiHandler(JsonApi):
             self.abort(404)
         return JsonResponse(user)
 
+def handle_404(request, response, exception):
+    return JsonResponse({'message': 'Not Found'}, 404)
+
 app = webapp2.WSGIApplication([
     (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
-    (r'/api/v0/user/(.+)', UserApiHandler),
+    (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
+
+app.error_handlers[404] = handle_404
