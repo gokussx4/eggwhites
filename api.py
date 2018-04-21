@@ -2,7 +2,7 @@ import json
 import logging
 import urllib
 import webapp2
-from google.appengine.api import urlfetch
+from google.appengine.api import datastore_errors, urlfetch
 from google.appengine.ext import ndb
 
 class ModelJSONEncoder(json.JSONEncoder):
@@ -14,7 +14,7 @@ class ModelJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 class User(ndb.Model):
-    name = ndb.StringProperty()
+    name = ndb.StringProperty(required=True)
 
 class Settings(ndb.Model):
   name = ndb.StringProperty()
@@ -61,6 +61,15 @@ class JsonApi(webapp2.RequestHandler):
             return json.loads(self.request.body)
         except:
             self.abort(400)
+    def put_object(self, Object, data):
+        try:
+            obj = Object(**data)
+            obj.put()
+            return obj
+        except AttributeError:
+            self.abort(400)
+        except datastore_errors.BadValueError:
+            self.abort(400)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
@@ -76,8 +85,7 @@ class JsonApi(webapp2.RequestHandler):
 class UserBaseApiHandler(JsonApi):
     def post(self):
         data = self.get_body()
-        user = User(**data)
-        user.put()
+        user = self.put_object(User, data)
         return JsonResponse(user)
 
 class UserApiHandler(JsonApi):
