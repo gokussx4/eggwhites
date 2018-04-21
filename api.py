@@ -69,6 +69,9 @@ class UserApiHandler(JsonApi):
 def handle_404(request, response, exception):
     return JsonResponse({'message': 'Not Found'}, 404)
 
+def handle_405(request, response, exception):
+    return JsonResponse({'message': 'Method Not Allowed'}, 405)
+
 app = webapp2.WSGIApplication([
     (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
@@ -76,3 +79,4 @@ app = webapp2.WSGIApplication([
 ], debug=True)
 
 app.error_handlers[404] = handle_404
+app.error_handlers[405] = handle_405
