@@ -14,9 +14,10 @@ class PhoneProperty(ndb.StringProperty):
     def _validate(self, value):
         if (not isinstance(value, basestring)):
             raise datastore_errors.BadValueError('Invalid phone')
-        if (not re.match(r'^\s*(?:\([0-9]{3}\) *|[0-9]{3}-?)[0-9]{3}-?[0-9]{4}\s*$', value)):
-            raise datastore_errors.BadValueError('Invalid phone')
-        return value.strip()
+        phone = re.sub(r'[^0-9]', '', value)
+        if (not re.match(r'^1?[0-9]{10}$', phone)):
+            raise datastore_errors.BadValueError('Invalid phone: ' + value)
+        return re.sub(r'^1?([0-9]{3})([0-9]{3})([0-9]{4})$', r'(\1) \2-\3', phone)
 
 class StateProperty(ndb.StringProperty):
     def _validate(self, value):
