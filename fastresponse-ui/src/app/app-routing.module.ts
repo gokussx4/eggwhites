@@ -5,7 +5,7 @@ import {RegisterComponent} from './register/register.component';
 import {DeviceComponent} from './device/device.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '', redirectTo: '/register', pathMatch: 'full' },
   { path: 'register', component: RegisterComponent },
   { path: 'device', component: DeviceComponent}
 ];

@@ -44,6 +44,7 @@ class MainPage(webapp2.RequestHandler):
         url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + urllib.quote(address) + '&key=' + key
         obj = json.loads(urlfetch.fetch(url).content)
         self.response.headers['Content-Type'] = 'text/plain'
+        self.repsonse.headers.add_header("Access-Control-Allow-Origin", "*")
         self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
 
 class JsonResponse(webapp2.Response):
@@ -87,6 +88,10 @@ class UserBaseApiHandler(JsonApi):
         data = self.get_body()
         user = self.put_object(User, data)
         return JsonResponse(user)
+    def options(self):      
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+        self.response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE'
 
 class UserApiHandler(JsonApi):
     def get(self, user_id):

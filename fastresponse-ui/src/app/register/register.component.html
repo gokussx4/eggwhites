@@ -3,7 +3,7 @@
     <tr>
       <td>
         <mat-form-field class="register-full-width">
-          <input matInput placeholder="Name">
+          <input matInput placeholder="Name" [(ngModel)]="user.name" name="name">
         </mat-form-field>
       </td>
     </tr>
@@ -11,7 +11,7 @@
 
   <p>
     <mat-form-field class="register-full-width">
-      <input matInput placeholder="Address">
+      <input matInput placeholder="Address" [(ngModel)]="user.address" name="address">
     </mat-form-field>
   </p>
 
@@ -19,20 +19,21 @@
     <tr>
       <td>
         <mat-form-field class="register-full-width">
-          <input matInput placeholder="City">
+          <input matInput placeholder="City" [(ngModel)]="user.city" name="city">
         </mat-form-field>
       </td>
       <td>
         <mat-form-field class="register-full-width">
-          <input matInput placeholder="State">
+          <input matInput placeholder="State" [(ngModel)]="user.state" name="state">
         </mat-form-field>
       </td>
       <td>
         <mat-form-field class="register-full-width">
-          <input matInput #postalCode maxlength="5" placeholder="Postal Code">
+          <input matInput #postalCode maxlength="5" placeholder="Postal Code" [(ngModel)]="user.zip" name="zip">
           <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint>
         </mat-form-field>
       </td>
     </tr>
   </table>
+  <button mat-raised-button (click)="onSubmit()">Submit</button>
 </form>

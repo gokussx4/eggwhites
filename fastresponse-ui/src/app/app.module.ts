@@ -5,17 +5,21 @@ import {
   MatInputModule,
   MatToolbarModule,
   MatSidenavModule,
-  MatListModule
+  MatListModule,
+  MatIconModule
 } from '@angular/material';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatIconModule} from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
-import { AppRoutingModule } from './/app-routing.module';
+import {RegisterService} from './register.service';
+import { AppRoutingModule } from './app-routing.module';
 import { DeviceComponent } from './device/device.component';
+import { HttpClientModule } from '@angular/common/http';
+
 
 
 @NgModule({
@@ -33,9 +37,11 @@ import { DeviceComponent } from './device/device.component';
     MatSidenavModule,
     MatListModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [RegisterService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
