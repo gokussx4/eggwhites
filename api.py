@@ -53,8 +53,8 @@ class UserBaseApiHandler(JsonApi):
         return JsonResponse(user)
 
 class UserApiHandler(JsonApi):
-    def get(self, user_id):
-        user = User.get_by_id(long(user_id, base=16))
+    def get(self, user_key):
+        user = User.get_by_key(user_key)
         if (user is None):
             self.abort(404)
         return JsonResponse(user)
@@ -82,7 +82,7 @@ def handle_405(request, response, exception):
 app = webapp2.WSGIApplication([
     (r'/api/v0/user', UserBaseApiHandler),
     (r'/api/v0/user/search', UserSearchApiHandler),
-    (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
+    (r'/api/v0/user/([0-9a-zA-Z-]+)', UserApiHandler),
 ], debug=True)
 
 app.error_handlers[404] = handle_404

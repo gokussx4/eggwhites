@@ -6,7 +6,7 @@ class ModelJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if (isinstance(obj, ndb.Model)):
             mobj = obj.to_dict()
-            mobj['id'] = '{0:x}'.format(obj.key.id())
+            mobj['id'] = obj.key.urlsafe()
             return mobj
         return json.JSONEncoder.default(self, obj)
 
@@ -67,6 +67,10 @@ class User(ndb.Model):
     city = ndb.StringProperty(required=True)
     state = StateProperty(required=True)
     zip = ZipProperty(required=True)
+
+    @staticmethod
+    def get_by_key(key):
+        return ndb.Key(urlsafe = key).get()
 
     def full_address(self):
         return self.address + ', ' + self.city + ', ' +self.state + ' ' + self.zip
