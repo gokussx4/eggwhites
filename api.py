@@ -49,7 +49,7 @@ class JsonApi(webapp2.RequestHandler):
 class UserBaseApiHandler(JsonApi):
     def post(self):
         data = self.get_body()
-        if (data['id'] != None):
+        if ('id' in data):
             self.abort(400)
         user = self.put_object(User, data)
         return JsonResponse(user)
