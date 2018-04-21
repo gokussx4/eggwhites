@@ -26,6 +26,14 @@ class ZipProperty(ndb.StringProperty):
             raise datastore_errors.BadValueError('Invalid zip')
         return value.strip()
 
+class GeoCache(ndb.Model):
+    address = ndb.StringProperty(required=True)
+    geo = ndb.GeoPtProperty(required=True, indexed=False)
+
+    @classmethod
+    def get_by_address(cls, address):
+        return cls.query(cls.address == address).get()
+
 class Settings(ndb.Model):
   name = ndb.StringProperty()
   value = ndb.StringProperty()

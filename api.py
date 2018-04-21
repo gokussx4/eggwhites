@@ -7,16 +7,6 @@ import webapp2
 from google.appengine.api import datastore_errors, urlfetch
 
 
-class MainPage(webapp2.RequestHandler):
-    def get(self):
-        self.response.headers['Content-Type'] = 'text/html'
-        self.response.write('<form method=post><textarea name=address></textarea><br><button type=submit>Search</button></form>')
-    def post(self):
-        address = self.request.POST['address']
-        obj = geocode(address)
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
-
 class JsonResponse(webapp2.Response):
     def __init__(self, body, status=200):
         super(webapp2.Response, self).__init__()
@@ -73,7 +63,6 @@ def handle_405(request, response, exception):
     return JsonResponse({'message': 'Method Not Allowed'}, 405)
 
 app = webapp2.WSGIApplication([
-    (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
     (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
