@@ -54,6 +54,13 @@ class JsonResponse(webapp2.Response):
         self.body = json.dumps(body, cls=ModelJSONEncoder) + '\n'
 
 class JsonApi(webapp2.RequestHandler):
+    def get_body(self):
+        if (self.request.headers['Content-Type'] != 'application/json'):
+            self.abort(400)
+        try:
+            return json.loads(self.request.body)
+        except:
+            self.abort(400)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
@@ -68,7 +75,8 @@ class JsonApi(webapp2.RequestHandler):
 
 class UserBaseApiHandler(JsonApi):
     def post(self):
-        user = User(**self.request.POST)
+        data = self.get_body()
+        user = User(**data)
         user.put()
         return JsonResponse(user)
 
