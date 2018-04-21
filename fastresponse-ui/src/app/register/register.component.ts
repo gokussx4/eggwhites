@@ -11,8 +11,8 @@ import { Observable } from 'rxjs/Observable';
 export class RegisterComponent implements OnInit {
   
   user: UserInput = new UserInput();
-  userId: string;
-  
+  userId: string = '';
+
   constructor(private regService: RegisterService) { }
 
   ngOnInit() {
