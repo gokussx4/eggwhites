@@ -32,11 +32,12 @@ def delete_entity(fast_responder_instance):
 def _get_latitude(self):
     return self.location.lat if self.location else None
 
+
 def _set_latitude(self, lat):
     if not self.location:
-      self.location = db.GeoPt()
+        self.location = db.GeoPt()
+
     self.location.lat = lat
-  latitude = property(_get_latitude, _set_latitude)
 
 def _get_longitude(self):
     return self.location.lon if self.location else None
