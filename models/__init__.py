@@ -10,6 +10,14 @@ class ModelJSONEncoder(json.JSONEncoder):
             return mobj
         return json.JSONEncoder.default(self, obj)
 
+class StateProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid state')
+        if (not re.match(r'^\s*[A-Za-z]{2}\s*$', value)):
+            raise datastore_errors.BadValueError('Invalid state')
+        return value.strip().upper()
+
 class ZipProperty(ndb.StringProperty):
     def _validate(self, value):
         if (not isinstance(value, basestring)):
@@ -39,5 +47,5 @@ class User(ndb.Model):
     name = ndb.StringProperty(required=True)
     address = ndb.StringProperty(required=True)
     city = ndb.StringProperty(required=True)
-    state = ndb.StringProperty(required=True)
+    state = StateProperty(required=True)
     zip = ZipProperty(required=True)
