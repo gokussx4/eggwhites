@@ -1,0 +1,35 @@
+<form class="example-form">
+  <mat-form-field>
+    <input matInput placeholder="AED Model">
+  </mat-form-field>
+
+  <p>
+    <label class="example-full-width">Location</label>
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Street">
+    </mat-form-field>
+  </p>
+
+  <table class="example-full-width" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="City">
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="State">
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="example-full-width">
+          <input matInput #postalCode maxlength="5" placeholder="Postal Code">
+          <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint>
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+
+
+</form>
