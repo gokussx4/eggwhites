@@ -99,8 +99,13 @@ class UserApiHandler(JsonApi):
             self.abort(404)
         return JsonResponse(user)
 
+def handle_404(request, response, exception):
+    return JsonResponse({'message': 'Not Found'}, 404)
+
 app = webapp2.WSGIApplication([
     (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
-    (r'/api/v0/user/(.+)', UserApiHandler),
+    (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
+
+app.error_handlers[404] = handle_404
