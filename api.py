@@ -1,4 +1,5 @@
 import json
+import logging
 import urllib
 import webapp2
 from google.appengine.api import urlfetch
@@ -60,16 +61,18 @@ class JsonApi(webapp2.RequestHandler):
         if (isinstance(exception, webapp2.HTTPException)):
             status = exception.code
             body['message'] = exception.title
+        else:
+            logging.exception(exception)
 
         return JsonResponse(body, status)
 
-class UserBaseApiHandler(webapp2.RequestHandler):
+class UserBaseApiHandler(JsonApi):
     def post(self):
         user = User(**self.request.POST)
         user.put()
         return JsonResponse(user)
 
-class UserApiHandler(webapp2.RequestHandler):
+class UserApiHandler(JsonApi):
     def get(self, user_id):
         user = User.get_by_id(long(user_id, base=16))
         if (user is None):
