@@ -8,12 +8,17 @@ def geocode(address):
     if (geo != None):
         return geo.geo
     geo = _request(address)
+    if (geo is None):
+        return None
     geo.put()
     return geo.geo
 
 def _request(address):
     key = Settings.get('GOOGLE_MAPS_API_KEY')
     url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + urllib.quote(address) + '&key=' + key
-    loc = json.loads(urlfetch.fetch(url).content)['results'][0]['geometry']['location']
+    res = json.loads(urlfetch.fetch(url).content)['results']
+    if (len(res) == 0):
+        return None
+    loc = res[0]['geometry']['location']
     geo = ndb.GeoPt(loc['lat'], loc['lng'])
     return GeoCache(address = address, geo = geo)

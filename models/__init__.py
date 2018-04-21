@@ -67,3 +67,6 @@ class User(ndb.Model):
     city = ndb.StringProperty(required=True)
     state = StateProperty(required=True)
     zip = ZipProperty(required=True)
+
+    def full_address(self):
+        return self.address + ', ' + self.city + ', ' +self.state + ' ' + self.zip

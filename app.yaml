@@ -3,6 +3,8 @@ api_version: 1
 threadsafe: true
 
 libraries:
+- name: numpy
+  version: latest
 - name: webapp2
   version: latest
 

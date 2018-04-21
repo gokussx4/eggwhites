@@ -1,10 +1,13 @@
+import collections
 import json
 import logging
+import numpy as np
 from gmaps import geocode
 from models import ModelJSONEncoder, User
 import urllib
 import webapp2
 from google.appengine.api import datastore_errors, urlfetch
+import distance
 
 
 class JsonResponse(webapp2.Response):
@@ -56,6 +59,20 @@ class UserApiHandler(JsonApi):
             self.abort(404)
         return JsonResponse(user)
 
+class UserSearchApiHandler(JsonApi):
+    def post(self):
+        data = self.get_body()
+        geo = geocode(data['address'])
+        pos1 = np.array([geo.lat, geo.lon])
+        pos2Dictionary = collections.OrderedDict()
+        for user in User.query().fetch():
+            user_geo = geocode(user.full_address())
+            if (user_geo != None):
+                pos2Dictionary[user.key.id()] = [user_geo.lat, user_geo.lon]
+        dists = distance.get_distance_sorted_responders(pos1, pos2Dictionary)
+        user = User.get_by_id(dists.keys()[0])
+        return JsonResponse(user)
+
 def handle_404(request, response, exception):
     return JsonResponse({'message': 'Not Found'}, 404)
 
@@ -64,6 +81,7 @@ def handle_405(request, response, exception):
 
 app = webapp2.WSGIApplication([
     (r'/api/v0/user', UserBaseApiHandler),
+    (r'/api/v0/user/search', UserSearchApiHandler),
     (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
 
