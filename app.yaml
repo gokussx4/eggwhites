@@ -4,4 +4,4 @@ threadsafe: true
 
 handlers:
 - url: /.*
-  script: main.app
+  static_files: fastresponse-ui/index.html
