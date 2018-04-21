@@ -10,6 +10,14 @@ class ModelJSONEncoder(json.JSONEncoder):
             return mobj
         return json.JSONEncoder.default(self, obj)
 
+class PhoneProperty(ndb.StringProperty):
+    def _validate(self, value):
+        if (not isinstance(value, basestring)):
+            raise datastore_errors.BadValueError('Invalid phone')
+        if (not re.match(r'^\s*(?:\([0-9]{3}\) *|[0-9]{3}-?)[0-9]{3}-?[0-9]{4}\s*$', value)):
+            raise datastore_errors.BadValueError('Invalid phone')
+        return value.strip()
+
 class StateProperty(ndb.StringProperty):
     def _validate(self, value):
         if (not isinstance(value, basestring)):
@@ -53,6 +61,7 @@ class Settings(ndb.Model):
 
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
+    phone = PhoneProperty(required=True)
     address = ndb.StringProperty(required=True)
     city = ndb.StringProperty(required=True)
     state = StateProperty(required=True)
