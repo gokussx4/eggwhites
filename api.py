@@ -1,10 +1,12 @@
 import json
 import logging
+from gmaps import geocode
+from models import ModelJSONEncoder, User
 import urllib
 import webapp2
 from google.appengine.api import datastore_errors, urlfetch
-from google.appengine.ext import ndb
 
+<<<<<<< HEAD
 class ModelJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if (isinstance(obj, ndb.Model)):
@@ -46,6 +48,8 @@ class MainPage(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         self.repsonse.headers.add_header("Access-Control-Allow-Origin", "*")
         self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
+=======
+>>>>>>> master
 
 class JsonResponse(webapp2.Response):
     def __init__(self, body, status=200):
@@ -69,8 +73,8 @@ class JsonApi(webapp2.RequestHandler):
             return obj
         except AttributeError:
             self.abort(400)
-        except datastore_errors.BadValueError:
-            self.abort(400)
+        except datastore_errors.BadValueError as ex:
+            self.abort(400, title=ex.message)
     def handle_exception(self, exception, debug_mode):
         status = 500
         body = {'message': 'Internal Server Error'}
@@ -100,8 +104,16 @@ class UserApiHandler(JsonApi):
             self.abort(404)
         return JsonResponse(user)
 
+def handle_404(request, response, exception):
+    return JsonResponse({'message': 'Not Found'}, 404)
+
+def handle_405(request, response, exception):
+    return JsonResponse({'message': 'Method Not Allowed'}, 405)
+
 app = webapp2.WSGIApplication([
-    (r'/api/', MainPage),
     (r'/api/v0/user', UserBaseApiHandler),
-    (r'/api/v0/user/(.+)', UserApiHandler),
+    (r'/api/v0/user/([0-9a-f]+)', UserApiHandler),
 ], debug=True)
+
+app.error_handlers[404] = handle_404
+app.error_handlers[405] = handle_405
