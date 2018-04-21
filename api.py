@@ -1,6 +1,7 @@
 import json
 import logging
-from models import ModelJSONEncoder, Settings, User
+from gmaps import geocode
+from models import ModelJSONEncoder, User
 import urllib
 import webapp2
 from google.appengine.api import datastore_errors, urlfetch
@@ -12,9 +13,7 @@ class MainPage(webapp2.RequestHandler):
         self.response.write('<form method=post><textarea name=address></textarea><br><button type=submit>Search</button></form>')
     def post(self):
         address = self.request.POST['address']
-        key = Settings.get('GOOGLE_MAPS_API_KEY')
-        url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + urllib.quote(address) + '&key=' + key
-        obj = json.loads(urlfetch.fetch(url).content)
+        obj = geocode(address)
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write(json.dumps(obj['results'][0]['geometry']['location']))
 
